@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import FacebookLogin from 'react-facebook-login'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+export class App extends Component{
+  constructor(props){
+    super(props)
+    this.state = {
+      isLoggedin : false
+    }
+  }
+
+  responseFacebook = (response) =>{
+    console.log(response)
+    this.setState({
+      isLoggedin : true,
+      resp: response
+    })
+  }
+
+  getCSRFToken = () => {
+      // Simple GET request using fetch
+      fetch('http://localhost:8000/accounts/fb/csrf')
+      .then(response => console.log(response.json())
+      )
+  }
+  
+  //imageUrl = this.state.resp.picture.data.url;
+
+  render(){
+    return (
+      this.state.isLoggedin ? 
+        `Welcome Home ${this.state.resp.name}`
+      :
+      <div>
+        <FacebookLogin
+          appId="764350358048782"
+          autoLoad={true}
+          fields="name,email,picture"
+          callback={this.responseFacebook} 
+          state = {this.getCSRFToken}
+        />
+      </div>
+    )
+  }
 }
 
-export default App;
+export default App
